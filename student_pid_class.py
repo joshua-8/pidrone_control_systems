@@ -37,8 +37,12 @@ class PID:
         self._lowLimit = 1100
         self._highLimit = 1900
 
-        self.b=[111100, -212600, 101700] # controller coefficients b0 through bn
-        self.a=[1, -0.2953, -0.7047] # controller coefficients a1 through an
+        self.b=[.55, -1.091, .5409] # controller coefficients b0 through bn
+        self.a=[1, -1.091, 0.09091] # controller coefficients a1 through an
+
+
+#        self.b=[111100, -212600, 101700] # controller coefficients b0 through bn
+#        self.a=[1, -0.2953, -0.7047] # controller coefficients a1 through an
     
         self.bn=len(self.b)
         self.an=len(self.a)
