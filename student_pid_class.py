@@ -1,10 +1,11 @@
 
-
+# https://github.com/h2r/pidrone_project3_pid/tree/d16297596fe988c2ecb7225bf3c1e0f61ff7b165 
 
 class PID:
     """
     This is your PID class! Be sure to read the docstrings carefully and fill in all methods of this class!
     """
+
 
     def __init__(self, kp, ki, kd, k):
         """
@@ -24,7 +25,39 @@ class PID:
         :param k: The offset constant that will be added to the sum of the P, I, and D control terms
         """
 
-        pass
+        self._sumError = 0
+        self._derivError = 0
+        self._lastErr = 0
+
+        self._p = kp # not used
+        self._i = ki # not used
+        self._d = kd # not used
+        self._k = k # not used
+
+        self._lowLimit = 1100
+        self._highLimit = 1900
+
+        self.b=[100] # controller coefficients b0 through bn
+        self.a=[1, 1, 1] # controller coefficients a1 through an
+    
+        self.bn=len(self.b)
+        self.an=len(self.a)
+
+        self.ubuf=[]
+        self.ybuf=[]
+
+        self.u=0
+
+        for i in range(0, self.bn):
+            self.ubuf.append(0) # b1*u(k-1) through bn*u(k-n)
+            print("b u add", i)
+
+        self.ybuf.append(0) # y(k)
+        for i in range(0, self.an):
+            self.ybuf.append(0) # a1*(k-1) through an*y(k-n)
+            print("a y add", i)
+    
+
 
     def step(self, err, dt):
         """
@@ -39,8 +72,36 @@ class PID:
         :returns: You should restrict your output to be between 1100 and 1900. This is a PWM command, which will be
                   sent to the SkyLine's throttle channel
         """
+        print()
+        print(1.0/dt)
+        print(dt)
+        print()
 
-        return 1100
+        self.u=err
+
+        for i in range(self.bn-1, 0, -1): # shift data right one step, moving right to left
+            self.ubuf[i]=self.ubuf[i-1]
+        for i in range(self.an, 0, -1):
+            self.ybuf[i]=self.ybuf[i-1]
+        self.ubuf[0] = self.u
+
+        self.ybuf[0] = 0 # y(k) will be set equal to the difference equation in the following lines
+        for i in range(0, self.bn):
+            self.ybuf[0]+=self.b[i]*self.ubuf[i]
+
+        for i in range(1, self.an+1):
+            self.ybuf[0]-=self.a[i-1]*self.ybuf[i]
+
+        output = self.ybuf[0] # y(k) from difference equation
+
+        output += 1300
+
+        print("ubuf")
+        print(self.ubuf)
+        print("ybuf")
+        print(self.ybuf)
+
+        return output
 
     def reset(self):
         """
@@ -49,4 +110,6 @@ class PID:
         not affect the current calculations (think about what this entails)!
         """
 
-        pass
+        self._sumError = 0
+        self._derivError = 0
+        self._lastErr = 0
