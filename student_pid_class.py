@@ -37,8 +37,8 @@ class PID:
         self._lowLimit = 1100
         self._highLimit = 1900
 
-        self.b=[100] # controller coefficients b0 through bn
-        self.a=[1, 1, 1] # controller coefficients a1 through an
+        self.b=[111100, -212600, 101700] # controller coefficients b0 through bn
+        self.a=[1, -0.2953, -0.7047] # controller coefficients a1 through an
     
         self.bn=len(self.b)
         self.an=len(self.a)
@@ -50,12 +50,10 @@ class PID:
 
         for i in range(0, self.bn):
             self.ubuf.append(0) # b1*u(k-1) through bn*u(k-n)
-            print("b u add", i)
-
+    
         self.ybuf.append(0) # y(k)
         for i in range(0, self.an):
             self.ybuf.append(0) # a1*(k-1) through an*y(k-n)
-            print("a y add", i)
     
 
 
@@ -72,10 +70,6 @@ class PID:
         :returns: You should restrict your output to be between 1100 and 1900. This is a PWM command, which will be
                   sent to the SkyLine's throttle channel
         """
-        print()
-        print(1.0/dt)
-        print(dt)
-        print()
 
         self.u=err
 
@@ -95,11 +89,6 @@ class PID:
         output = self.ybuf[0] # y(k) from difference equation
 
         output += 1300
-
-        print("ubuf")
-        print(self.ubuf)
-        print("ybuf")
-        print(self.ybuf)
 
         return output
 
