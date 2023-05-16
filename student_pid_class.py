@@ -77,7 +77,7 @@ class PID:
 
         print(self._range)
         print(output)
-        output += A^(-C*self._range)+B
+        output += pow(A,(-C*self._range))+B
         print(output)
 
         self._lasterr=err
