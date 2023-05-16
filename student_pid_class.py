@@ -28,9 +28,9 @@ class PID:
         :param k: The offset constant that will be added to the sum of the P, I, and D control terms
         """
 
-        self._p = 2
+        self._p = 4
         self._i = ki # not used
-        self._d = 1
+        self._d = 2
         self._k = k # not used
 
         self._lowLimit = 1100
@@ -63,7 +63,6 @@ class PID:
 
         err = err
 
-        print("---------------------")
         print(err)
 
         a=.2 # smooths derivative
@@ -76,10 +75,7 @@ class PID:
         C=6.278
         B=1489
 
-        print(self._range)
-        print(output)
         output += A*np.exp(-C*self._range)+B
-        print(output)
 
         self._lasterr=err
 
@@ -87,8 +83,6 @@ class PID:
             output=self._highLimit
         if(output < self._lowLimit):
             output=self._lowLimit
-
-        print(output)
 
         return output
 
