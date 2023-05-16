@@ -30,7 +30,7 @@ class PID:
 
         self._p = 1.5
         self._i = 0.25
-        self._d = 2
+        self._d = .75
         self._k = k # not used
 
         self._lowLimit = 1100
