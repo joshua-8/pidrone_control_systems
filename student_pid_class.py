@@ -28,8 +28,8 @@ class PID:
         :param k: The offset constant that will be added to the sum of the P, I, and D control terms
         """
 
-        self._p = 4
-        self._i = ki # not used
+        self._p = 3
+        self._i = 0.25
         self._d = 2
         self._k = k # not used
 
@@ -38,6 +38,8 @@ class PID:
 
         self._lasterr = 0
         self._dfilter = 0
+        self._sumError = 0
+
 
         self._range=0
 
@@ -69,7 +71,11 @@ class PID:
 
         self._dfilter=self._dfilter*(1-a)+((err-self._lasterr)/dt)*(a)
 
-        output=self._p*err + self._d*self._dfilter
+        self._sumError += err * dt
+        i = self._i*self._sumError
+
+
+        output=self._p*err + self._d*self._dfilter + i
 
         A=-204.3
         C=6.278
