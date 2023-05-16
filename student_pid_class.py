@@ -1,11 +1,13 @@
 
 # https://github.com/h2r/pidrone_project3_pid/tree/d16297596fe988c2ecb7225bf3c1e0f61ff7b165 
 
+import rospy
+from sensor_msgs.msg import Range
+
 class PID:
     """
     This is your PID class! Be sure to read the docstrings carefully and fill in all methods of this class!
     """
-
 
     def __init__(self, kp, ki, kd, k):
         """
@@ -25,35 +27,23 @@ class PID:
         :param k: The offset constant that will be added to the sum of the P, I, and D control terms
         """
 
-        self._p = kp
+        self._p = 1
         self._i = ki # not used
-        self._d = kd
+        self._d = 1
         self._k = k # not used
 
         self._lowLimit = 1100
         self._highLimit = 1900
 
-        self.b=[.0625, 0.0625] # controller coefficients b0 through bn
-        self.a=[1, -.875] # controller coefficients a1 through an
+        self._lasterr = 0
+        self._dfilter = 0
 
-#        self.b=[111100, -212600, 101700] # controller coefficients b0 through bn
-#        self.a=[1, -0.2953, -0.7047] # controller coefficients a1 through an
-    
-        self.bn=len(self.b)
-        self.an=len(self.a)
+        self._range=0
 
-        self.ubuf=[]
-        self.ybuf=[]
+        rospy.Subscriber('/pidrone/range', Range, self.range_callback)
 
-        self.u=0
-
-        for i in range(0, self.bn):
-            self.ubuf.append(0) # b1*u(k-1) through bn*u(k-n)
-    
-        self.ybuf.append(0) # y(k)
-        for i in range(0, self.an):
-            self.ybuf.append(0) # a1*(k-1) through an*y(k-n)
-    
+    def range_callback(self, data):
+        self._range=data.range
 
 
     def step(self, err, dt):
@@ -70,32 +60,36 @@ class PID:
                   sent to the SkyLine's throttle channel
         """
 
-        self.u=err
-
-        for i in range(self.bn-1, 0, -1): # shift data right one step, moving right to left
-            self.ubuf[i]=self.ubuf[i-1]
-        for i in range(self.an, 0, -1):
-            self.ybuf[i]=self.ybuf[i-1]
-        self.ubuf[0] = self.u
-
-        self.ybuf[0] = 0 # y(k) will be set equal to the difference equation in the following lines
-        for i in range(0, self.bn):
-            self.ybuf[0]+=self.b[i]*self.ubuf[i]
-
-        for i in range(1, self.an+1):
-            self.ybuf[0]-=self.a[i-1]*self.ybuf[i]
-
-        output = self.ybuf[0] # y(k) from difference equation
+        err = err
 
         print("---------------------")
         print(err)
-        print(self.ubuf)
-        print(self.ybuf)
 
-        output += 1300
+        a=.5 # smooths derivative
+
+        self._dfilter=self._dfilter*(1-a)+((err-self._lasterr)/dt)*(a)
+
+        output=self.k*err + self.d*self._dfilter
+
+        A=-204.3
+        C=6.278
+        B=1489
+
+        print(self._range)
+        print(output)
+        output += A^(-C*self._range)+B
         print(output)
 
-        return 0#output
+        self._lasterr=err
+
+        if(output > self._highLimit):
+            output=self._highLimit
+        if(output < self._lowLimit):
+            output=self._lowLimit
+
+        print(output)
+
+        return output
 
     def reset(self):
         """
@@ -103,5 +97,7 @@ class PID:
         from armed mode to flying mode. You will want to reset the PID terms so that previously stored values will
         not affect the current calculations (think about what this entails)!
         """
+        self._lasterr = 0
+        self._dfilter = 0
 
     
