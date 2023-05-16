@@ -25,21 +25,16 @@ class PID:
         :param k: The offset constant that will be added to the sum of the P, I, and D control terms
         """
 
-        self._sumError = 0
-        self._derivError = 0
-        self._lastErr = 0
-
-        self._p = kp # not used
+        self._p = kp
         self._i = ki # not used
-        self._d = kd # not used
+        self._d = kd
         self._k = k # not used
 
         self._lowLimit = 1100
         self._highLimit = 1900
 
-        self.b=[.55, -1.091, .5409] # controller coefficients b0 through bn
-        self.a=[1, -1.091, 0.09091] # controller coefficients a1 through an
-
+        self.b=[.0625, 0.0625] # controller coefficients b0 through bn
+        self.a=[1, -.875] # controller coefficients a1 through an
 
 #        self.b=[111100, -212600, 101700] # controller coefficients b0 through bn
 #        self.a=[1, -0.2953, -0.7047] # controller coefficients a1 through an
@@ -92,9 +87,15 @@ class PID:
 
         output = self.ybuf[0] # y(k) from difference equation
 
-        output += 1300
+        print("---------------------")
+        print(err)
+        print(self.ubuf)
+        print(self.ybuf)
 
-        return output
+        output += 1300
+        print(output)
+
+        return 0#output
 
     def reset(self):
         """
@@ -103,6 +104,4 @@ class PID:
         not affect the current calculations (think about what this entails)!
         """
 
-        self._sumError = 0
-        self._derivError = 0
-        self._lastErr = 0
+    
