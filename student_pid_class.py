@@ -28,7 +28,7 @@ class PID:
         :param k: The offset constant that will be added to the sum of the P, I, and D control terms
         """
 
-        self._p = 3.0
+        self._p = 1.5
         self._i = 0.5
         self._d = 0.5
         self._k = k # not used
