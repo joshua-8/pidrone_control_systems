@@ -28,7 +28,7 @@ class PID:
         :param k: The offset constant that will be added to the sum of the P, I, and D control terms
         """
 
-        self._p = 2
+        self._p = 1.5
         self._i = 0.25
         self._d = 2
         self._k = k # not used
@@ -67,11 +67,12 @@ class PID:
 
         print(err)
 
-        a=.1 # smooths derivative
+        a=.5 # smooths derivative
 
         self._dfilter=self._dfilter*(1-a)+((err-self._lasterr)/dt)*(a)
 
         self._sumError += err * dt
+        self._sumError=np.clip(self._sumError,-100,100)
         i = self._i*self._sumError
 
 
@@ -100,5 +101,6 @@ class PID:
         """
         self._lasterr = 0
         self._dfilter = 0
+        self._lasterr
 
     
