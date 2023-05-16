@@ -69,7 +69,7 @@ class PID:
 
         self._dfilter=self._dfilter*(1-a)+((err-self._lasterr)/dt)*(a)
 
-        output=self.k*err + self.d*self._dfilter
+        output=self._p*err + self._d*self._dfilter
 
         A=-204.3
         C=6.278
