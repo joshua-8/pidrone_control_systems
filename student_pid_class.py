@@ -30,7 +30,7 @@ class PID:
 
         self._p = 1.5
         self._i = 0.5
-        self._d = 0.5
+        self._d = 1
         self._k = k # not used
 
         self._lowLimit = 1100
@@ -67,7 +67,7 @@ class PID:
 
         print(err)
 
-        a=.5 # smooths derivative
+        a=.3 # smooths derivative
 
         self._dfilter=self._dfilter*(1-a)+((err-self._lasterr)/dt)*(a)
 
