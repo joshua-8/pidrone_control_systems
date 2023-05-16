@@ -3,6 +3,7 @@
 
 import rospy
 from sensor_msgs.msg import Range
+import numpy as np
 
 class PID:
     """
@@ -77,7 +78,7 @@ class PID:
 
         print(self._range)
         print(output)
-        output += pow(A,(-C*self._range))+B
+        output += A*np.exp(-C*self._range)+B
         print(output)
 
         self._lasterr=err
