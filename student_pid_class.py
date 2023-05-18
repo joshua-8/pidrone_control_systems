@@ -33,12 +33,14 @@ class PID:
         self._d = 1
         self._k = k # not used
 
-        self._lowLimit = 1100
-        self._highLimit = 1900
+        # limit of pid loop centered around nonlinear calculated offset
+        self._lowLimit = -100
+        self._highLimit = 100
 
         self._lasterr = 0
         self._dfilter = 0
         self._sumError = 0
+        self._saturationerror = 0
 
 
         self._range=0
@@ -65,18 +67,26 @@ class PID:
 
         err = err
 
+        print("-------")
         print(err)
 
-        a=.3 # smooths derivative
-
+        a=.3 # smooths derivative, larger=less smoothing
         self._dfilter=self._dfilter*(1-a)+((err-self._lasterr)/dt)*(a)
 
+        print(self._saturationerror)
+
         self._sumError += err * dt
-        self._sumError=np.clip(self._sumError,-100,100)
+
         i = self._i*self._sumError
 
-
         output=self._p*err + self._d*self._dfilter + i
+
+        if(output > self._highLimit):
+            self._saturationerror=self._highLimit-output
+            output=self._highLimit
+        if(output < self._lowLimit):
+            self._saturationerror=output-self._lowLimit
+            output=self._lowLimit
 
         A=-204.3
         C=6.278
@@ -86,10 +96,6 @@ class PID:
 
         self._lasterr=err
 
-        if(output > self._highLimit):
-            output=self._highLimit
-        if(output < self._lowLimit):
-            output=self._lowLimit
 
         return output
 
@@ -101,6 +107,8 @@ class PID:
         """
         self._lasterr = 0
         self._dfilter = 0
-        self._lasterr
+        self._sumError = 0
+        self._saturationerror = 0
+
 
     
