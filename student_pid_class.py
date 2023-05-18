@@ -89,9 +89,13 @@ class PID:
             self._saturationerror=output-self._lowLimit
             output=self._lowLimit
 
+        print(output)
+
         A=-204.3
         C=6.278
         B=1489
+
+        print(A*np.exp(-C*self._range)+B)
 
         output += A*np.exp(-C*self._range)+B
 
