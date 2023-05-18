@@ -35,7 +35,7 @@ class PID:
 
         # limit of pid loop centered around nonlinear calculated offset
         self._lowLimit = -100
-        self._highLimit = 200
+        self._highLimit = 100
 
         self._lasterr = 0
         self._dfilter = 0
@@ -96,7 +96,6 @@ class PID:
         output += A*np.exp(-C*self._range)+B
 
         self._lasterr=err
-
 
         return output
 
