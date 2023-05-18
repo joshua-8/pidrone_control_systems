@@ -75,11 +75,15 @@ class PID:
 
         print(self._saturationerror)
 
-        self._sumError += err * dt
-        kaw=0.5
-        i = self._i*(self._sumError+kaw*self._saturationerror)
+        self._sumError += err * dt + kaw*self._saturationerror
+        kaw=0.1
+        i = self._i*(self._sumError)
+
+        print(self._sumError)
 
         output=self._p*err + self._d*self._dfilter + i
+
+        print(output)
 
         _saturationerror=0;
         if(output > self._highLimit):
@@ -88,8 +92,6 @@ class PID:
         if(output < self._lowLimit):
             self._saturationerror=output-self._lowLimit
             output=self._lowLimit
-
-        print(output)
 
         A=-204.3
         C=6.278
