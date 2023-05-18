@@ -35,7 +35,7 @@ class PID:
 
         # limit of pid loop centered around nonlinear calculated offset
         self._lowLimit = -100
-        self._highLimit = 100
+        self._highLimit = 200
 
         self._lasterr = 0
         self._dfilter = 0
@@ -76,11 +76,12 @@ class PID:
         print(self._saturationerror)
 
         self._sumError += err * dt
-
-        i = self._i*self._sumError
+        kaw=0.1
+        i = self._i*(self._sumError+kaw*self._saturationerror)
 
         output=self._p*err + self._d*self._dfilter + i
 
+        _saturationerror=0;
         if(output > self._highLimit):
             self._saturationerror=self._highLimit-output
             output=self._highLimit
