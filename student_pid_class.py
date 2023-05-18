@@ -1,9 +1,10 @@
 
-# https://github.com/h2r/pidrone_project3_pid/tree/d16297596fe988c2ecb7225bf3c1e0f61ff7b165 
+# https://github.com/h2r/pidrone_project3_pid/tree/d16297596fe988c2ecb7225bf3c1e0f61ff7b165
 
 import rospy
 from sensor_msgs.msg import Range
 import numpy as np
+
 
 class PID:
     """
@@ -31,7 +32,7 @@ class PID:
         self._p = 1.5
         self._i = 0.5
         self._d = 1
-        self._k = k # not used
+        self._k = k  # not used
 
         # limit of pid loop centered around nonlinear calculated offset
         self._lowLimit = -100
@@ -42,14 +43,12 @@ class PID:
         self._sumError = 0
         self._saturationerror = 0
 
-
-        self._range=0
+        self._range = 0
 
         rospy.Subscriber('/pidrone/range', Range, self.range_callback)
 
     def range_callback(self, data):
-        self._range=data.range
-
+        self._range = data.range
 
     def step(self, err, dt):
         """
@@ -68,40 +67,40 @@ class PID:
         err = err
 
         print("-------")
-        print("error",err)
+        print("error", err)
 
-        a=.3 # smooths derivative, larger=less smoothing
-        self._dfilter=self._dfilter*(1-a)+((err-self._lasterr)/dt)*(a)
+        a = .3  # smooths derivative, larger=less smoothing
+        self._dfilter = self._dfilter*(1-a)+((err-self._lasterr)/dt)*(a)
 
-        print("sat error",self._saturationerror)
+        print("sat error", self._saturationerror)
 
-        kaw=0.01
-        self._sumError += err * dt + kaw*self._saturationerror
+        kaw = 0.01
+        self._sumError += (err + kaw*self._saturationerror)*dt
         i = self._i*(self._sumError)
 
-        print("sum error",self._sumError)
+        print("sum error", self._sumError)
 
-        output=self._p*err + self._d*self._dfilter + i
+        output = self._p*err + self._d*self._dfilter + i
 
         print("unclipped output", output)
 
-        _saturationerror=0;
+        _saturationerror = 0
+        unclippedoutput=output
         if(output > self._highLimit):
-            self._saturationerror=self._highLimit-output
-            output=self._highLimit
+            output = self._highLimit
         if(output < self._lowLimit):
-            self._saturationerror=output-self._lowLimit
-            output=self._lowLimit
+            output = self._lowLimit
+        self._saturationerror(output-unclippedoutput)
 
-        A=-204.3
-        C=6.278
-        B=1489
+        A = -204.3
+        C = 6.278
+        B = 1489
 
-        print("offset",A*np.exp(-C*self._range)+B)
+        print("offset", A*np.exp(-C*self._range)+B)
 
         output += A*np.exp(-C*self._range)+B
 
-        self._lasterr=err
+        self._lasterr = err
 
         return output
 
@@ -115,6 +114,3 @@ class PID:
         self._dfilter = 0
         self._sumError = 0
         self._saturationerror = 0
-
-
-    
