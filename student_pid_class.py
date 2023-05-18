@@ -75,8 +75,8 @@ class PID:
 
         print(self._saturationerror)
 
-        self._sumError += err * dt + kaw*self._saturationerror
         kaw=0.1
+        self._sumError += err * dt + kaw*self._saturationerror
         i = self._i*(self._sumError)
 
         print(self._sumError)
