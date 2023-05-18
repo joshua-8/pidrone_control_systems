@@ -68,22 +68,22 @@ class PID:
         err = err
 
         print("-------")
-        print(err)
+        print("error",err)
 
         a=.3 # smooths derivative, larger=less smoothing
         self._dfilter=self._dfilter*(1-a)+((err-self._lasterr)/dt)*(a)
 
-        print(self._saturationerror)
+        print("sat error",self._saturationerror)
 
         kaw=0.1
         self._sumError += err * dt + kaw*self._saturationerror
         i = self._i*(self._sumError)
 
-        print(self._sumError)
+        print("sum error",self._sumError)
 
         output=self._p*err + self._d*self._dfilter + i
 
-        print(output)
+        print("unclipped output", output)
 
         _saturationerror=0;
         if(output > self._highLimit):
@@ -97,7 +97,7 @@ class PID:
         C=6.278
         B=1489
 
-        print(A*np.exp(-C*self._range)+B)
+        print("offset",A*np.exp(-C*self._range)+B)
 
         output += A*np.exp(-C*self._range)+B
 
