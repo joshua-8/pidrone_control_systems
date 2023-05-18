@@ -90,7 +90,7 @@ class PID:
             output = self._highLimit
         if(output < self._lowLimit):
             output = self._lowLimit
-        self._saturationerror(output-unclippedoutput)
+        self._saturationerror=output-unclippedoutput
 
         A = -204.3
         C = 6.278
