@@ -120,7 +120,7 @@ class PID:
         for i in range(0, self.bn):
             self.ybuf[0]+=self.b[i]*self.ubuf[i]
         for i in range(1, self.an+1):
-            self.ybuf[0]-=self.a[i-1]*self.ybuf[i]a
+            self.ybuf[0]-=self.a[i-1]*self.ybuf[i]
 
         output = self.ybuf[0] # y(k) from difference equation
         print("output", output)
