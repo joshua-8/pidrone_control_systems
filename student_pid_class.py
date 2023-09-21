@@ -124,14 +124,14 @@ class PID:
 
         for i in range(self.bn-1, 0, -1): # shift data right one step, moving right to left
             self.ubuf[i]=self.ubuf[i-1]
-        for i in range(self.an, 0, -1):
+        for i in range(self.an-1, 0, -1):
             self.ybuf[i]=self.ybuf[i-1]
         self.ubuf[0] = self.u
         self.ybuf[0] = 0 # y(k) will be set equal to the difference equation in the following lines
-        for i in range(0, self.bn):
+        for i in range(0, self.bn-1):
             self.ybuf[0]+=self.b[i]*self.ubuf[i]
-        for i in range(1, self.an+1):
-            self.ybuf[0]-=self.a[i-1]*self.ybuf[i]
+        for i in range(1, self.an-1):
+            self.ybuf[0]-=self.a[i]*self.ybuf[i]
 
         output = self.ybuf[0] # y(k) from difference equation
 
