@@ -48,7 +48,7 @@ class PID:
         self.ubuf=[]
         self.ybuf=[]
 
-         for i in range(0, self.bn):
+        for i in range(0, self.bn):
             self.ubuf.append(0) # b1*u(k-1) through bn*u(k-n)
     
         self.ybuf.append(0) # y(k)
