@@ -48,6 +48,15 @@ class PID:
         self.ubuf=[]
         self.ybuf=[]
 
+         for i in range(0, self.bn):
+            self.ubuf.append(0) # b1*u(k-1) through bn*u(k-n)
+    
+        self.ybuf.append(0) # y(k)
+        for i in range(0, self.an):
+            self.ybuf.append(0) # a1*(k-1) through an*y(k-n)
+    
+
+
         self.u=0
 
         self._lasterr = 0
