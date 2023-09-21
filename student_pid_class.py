@@ -42,6 +42,14 @@ class PID:
         self._lowLimit = -100
         self._highLimit = 100
 
+        self.bn=len(self.b)
+        self.an=len(self.a)
+
+        self.ubuf=[]
+        self.ybuf=[]
+
+        self.u=0
+
         self._lasterr = 0
         self._dfilter = 0
         self._sumError = 0
