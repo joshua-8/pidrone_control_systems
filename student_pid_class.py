@@ -34,30 +34,9 @@ class PID:
         self._d = 1
         self._k = k  # not used
 
-
-        self.b=[9173000,-18130000,8959000] # controller coefficients b0 through bn
-        self.a=[1,-1.759,.7595] # controller coefficients a1 through an
-
         # limit of pid loop centered around nonlinear calculated offset
         self._lowLimit = -100
         self._highLimit = 100
-
-        self.bn=len(self.b)
-        self.an=len(self.a)
-
-        self.ubuf=[]
-        self.ybuf=[]
-
-        for i in range(0, self.bn):
-            self.ubuf.append(0) # b1*u(k-1) through bn*u(k-n)
-    
-        self.ybuf.append(0) # y(k)
-        for i in range(0, self.an):
-            self.ybuf.append(0) # a1*(k-1) through an*y(k-n)
-    
-
-
-        self.u=0
 
         self._lasterr = 0
         self._dfilter = 0
@@ -80,14 +59,15 @@ class PID:
 
         :param err: The current error (difference between the setpoint and drone's current altitude) in meters.
                     For example, if the drone was 10 cm below the setpoint, err would be 0.1
-                    ERR IS MILLIMETERS!!!!!!!!!!!
         :param dt: The time (in seconds) elapsed between measurements of the process variable (the drone's altitude)
         :returns: You should restrict your output to be between 1100 and 1900. This is a PWM command, which will be
                   sent to the SkyLine's throttle channel
         """
-        """
+
         err = err
 
+        print("-------")
+        print("error", err)
 
         a = .3  # smooths derivative, larger=less smoothing
         self._dfilter = self._dfilter*(1-a)+((err-self._lasterr)/dt)*(a)
@@ -123,44 +103,6 @@ class PID:
         self._lasterr = err
 
         return output
-        """
-
-        err=err/1000.0
-
-        print("-------")
-        print("error", err)
-        print("dt", dt)
-
-        self.u=err
-
-        for i in range(self.bn-1, 0, -1): # shift data right one step, moving right to left
-            self.ubuf[i]=self.ubuf[i-1]
-        for i in range(self.an-1, 0, -1):
-            self.ybuf[i]=self.ybuf[i-1]
-        self.ubuf[0] = self.u
-        self.ybuf[0] = 0 # y(k) will be set equal to the difference equation in the following lines
-        for i in range(0, self.bn-1):
-            self.ybuf[0]+=self.b[i]*self.ubuf[i]
-        for i in range(1, self.an-1):
-            self.ybuf[0]-=self.a[i]*self.ybuf[i]
-
-        output = self.ybuf[0] # y(k) from difference equation
-
-        print(self.ubuf)
-        print(self.ybuf)
-
-        print("out", output)
-        A = -204.3
-        C = 6.278
-        B = 1489
-
-        print("offset", A*np.exp(-C*self._range)+B)
-
-        output += A*np.exp(-C*self._range)+B
-        print("output", output)
-
-        return output
-
 
     def reset(self):
         """
