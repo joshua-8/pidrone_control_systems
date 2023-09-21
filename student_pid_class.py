@@ -71,6 +71,7 @@ class PID:
 
         :param err: The current error (difference between the setpoint and drone's current altitude) in meters.
                     For example, if the drone was 10 cm below the setpoint, err would be 0.1
+                    ERR IS MILLIMETERS!!!!!!!!!!!
         :param dt: The time (in seconds) elapsed between measurements of the process variable (the drone's altitude)
         :returns: You should restrict your output to be between 1100 and 1900. This is a PWM command, which will be
                   sent to the SkyLine's throttle channel
@@ -115,6 +116,8 @@ class PID:
         return output
         """
 
+        err=err/1000.0
+
         print("-------")
         print("error", err)
         print("dt", dt)
@@ -131,10 +134,21 @@ class PID:
             self.ybuf[0]-=self.a[i-1]*self.ybuf[i]
 
         output = self.ybuf[0] # y(k) from difference equation
+
+        print(self.ubuf)
+        print(self.ybuf)
+
+        print("out", output)
+        A = -204.3
+        C = 6.278
+        B = 1489
+
+        print("offset", A*np.exp(-C*self._range)+B)
+
+        output += A*np.exp(-C*self._range)+B
         print("output", output)
-        if(output>1500):
-            output=1500
-        return output
+
+       return output
 
 
     def reset(self):
