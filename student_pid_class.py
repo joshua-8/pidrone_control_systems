@@ -131,6 +131,8 @@ class PID:
         print("error", err)
         print("dt", dt)
 
+        self.u=err
+
         for i in range(self.bn-1, 0, -1): # shift data right one step, moving right to left
             self.ubuf[i]=self.ubuf[i-1]
         for i in range(self.an-1, 0, -1):
